@@ -24,15 +24,16 @@ def get_score():
     print(request.json)
     answer = request.json
 
-    latitude = answer["latitude"]
-    longitude = answer["longitude"]
+    latitude = round(answer["latitude"], 2)
+    longitude = round(answer["longitude"], 2)
 
     is_in_cache = (False, None)
     for i in cache:
         if (
-            i[0] == latitude
-            and i[1] == longitude
-            and (datetime.now() - i[2]).total_seconds() < 3600
+            i[0] == "historical"
+            and i[1] == latitude
+            and i[2] == longitude
+            and (datetime.now() - i[3]).total_seconds() < 60 * 1
         ):
             is_in_cache = (True, i)
             break
@@ -40,9 +41,9 @@ def get_score():
     if not is_in_cache[0]:
         now = datetime.now()
         answer = get_probabilistic_weather(latitude=latitude, longitude=longitude)
-        cache[(latitude, longitude, now)] = answer
+        cache[("historical", latitude, longitude, now)] = answer
         print("data")
-        return cache[(latitude, longitude, now)]
+        return cache[("historical", latitude, longitude, now)]
     else:
         print("cache")
         return cache[is_in_cache[1]]
@@ -51,15 +52,14 @@ def get_score():
     # return cache[(latitude, longitude)]
 
 
-# @app.route("/", methods=['GET'])
+# @app.route("/", methods=["GET"])
 # def get_default_score():
 
 #     latitude = 40.522
 #     longitude = -74.436
 
 #     if (latitude, longitude) not in cache:
-#         answer = get_probabilistic_weather(
-#             latitude=latitude, longitude=longitude)
+#         answer = get_probabilistic_weather(latitude=latitude, longitude=longitude)
 #         cache[(latitude, longitude)] = answer
 #         print("data")
 #     else:
