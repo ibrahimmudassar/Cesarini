@@ -1,9 +1,14 @@
 from datetime import datetime, timedelta
 
+import httpx
 import plotly.express as px
 import polars as pl
-import httpx
+from environs import Env
+from openai import AsyncOpenAI
 from scipy.stats import kstest
+
+env = Env()
+env.read_env()
 
 
 def get_probabilistic_weather(longitude: float, latitude: float) -> dict:
@@ -60,3 +65,27 @@ def get_probabilistic_weather(longitude: float, latitude: float) -> dict:
             "temp_today": 0,
             "z_score": 0,
         }
+
+
+async def test_create_chat_completion():
+    client = AsyncOpenAI(
+        api_key=env("OPENAI_KEY"),
+        base_url="https://fresedgpt.space/v1",
+    )
+
+    stream = await client.chat.completions.create(
+        messages=[
+            {
+                "role": "user",
+                "content": "give me 6 emojis to fully describe this day: Temperature: 72°F, Rain Probability: 30%. only give me the 6 emojis and output the text in json with 1 key called 'message'",
+            }
+        ],
+        model="gpt-4o-mini",
+        stream=True,
+    )
+
+    async for chunk in stream:
+        print(chunk.choices[0].delta.content or "", end="")
+
+
+# Describe the weather given: Temperature: 72°F, Rain Probability: 30% using poetry in 1 sentence. output the text in json with 1 key called 'message'. include the temperature and rain probability
