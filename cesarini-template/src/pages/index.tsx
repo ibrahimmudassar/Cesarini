@@ -15,6 +15,7 @@ import { Spinner } from "@nextui-org/spinner";
 export default function IndexPage() {
   
   const [historicAvg, updateHistoricAvg] = useState("loading");
+  const [z_score, updateZScore] = useState("loading");
   
   useEffect(() => {
     
@@ -22,7 +23,9 @@ export default function IndexPage() {
       axios.post(url, {latitude: response.data.lat, longitude: response.data.lon}, {headers: {
         'Content-Type': 'application/json'
       }}).then((response) => {
+        console.log("Backend Response:", response.data);
         updateHistoricAvg(response.data.temp_today);
+        updateZScore(response.data.z_score);
       })
     })
     
@@ -51,20 +54,26 @@ export default function IndexPage() {
           <br />
           {historicAvg !== "loading" ? (<span className={title()}>
               
-              {/* {typeof historicAvg === "string" ? (
-                <p>{historicAvg}°F</p> ) : (
-                  
-                  <p>loading...</p>)} */}
-              
-              {historicAvg}°F
+             {historicAvg}°C
           </span>) : (<Spinner color="secondary"/>)}
           
           <br />
           <br />
           
-          <span className={title()}>
-          Clear
-          </span>
+          <span className={title()}>Clear</span>
+
+          <br />
+          <br />
+          <span className={title()}>Z-Score: </span>
+
+          {z_score !== "loading" ? (
+            <span className={title()}>
+              {parseFloat(z_score).toFixed(2)}
+            </span>
+          ) : (
+            <Spinner color="secondary" />
+          )}
+
           
       </div>
         
