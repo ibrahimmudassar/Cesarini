@@ -11,25 +11,102 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { url } from "@/config/url";
 import { Spinner } from "@nextui-org/spinner";
+import {Button} from "@nextui-org/button";
 
 export default function IndexPage() {
   
   const [historicAvg, updateHistoricAvg] = useState("loading");
   const [z_score, updateZScore] = useState("loading");
   
-  useEffect(() => {
+  // useEffect(() => {
     
-    axios.get("http://ip-api.com/json/").then((response) => {
-      axios.post(url, {latitude: response.data.lat, longitude: response.data.lon}, {headers: {
-        'Content-Type': 'application/json'
-      }}).then((response) => {
-        console.log("Backend Response:", response.data);
-        updateHistoricAvg(response.data.temp_today);
-        updateZScore(response.data.z_score);
-      })
-    })
+  //   axios.get("http://ip-api.com/json/").then((response) => {
+  //     axios.post(url, {latitude: response.data.lat, longitude: response.data.lon}, {headers: {
+  //       'Content-Type': 'application/json'
+  //     }}).then((response) => {
+  //       updateHistoricAvg(response.data.temp_today);
+  //       updateZScore(response.data.z_score);
+  //     })
+  //   })
     
-  },[])
+  // },[])
+
+
+      function getLocationAPI(){
+          
+        let locData = {lat: null, lon: null};
+        
+        axios.get("http://ip-api.com/json/").then((response) => {
+          
+          locData = {lat: response.data.lat, lon: response.data.lon};
+          
+        })
+
+        return locData;
+    }
+
+
+    function getLocation() {
+      if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                  (position) => {
+                      return { lat: position.coords.latitude, lon: position.coords.longitude };
+          });
+          } else {
+              console.log("Geolocation is not supported by this browser");
+              let tempData = getLocationAPI();
+
+              if (tempData){
+                return {lat: tempData.lat, lon: tempData.lon};
+              }
+              else{
+                return {};
+              }
+
+              
+              
+              
+          }
+      
+    }
+
+    useEffect(() => {
+
+            let locData = getLocation();
+            if (locData) {
+                axios.post(
+                    url,
+                    { latitude: locData.lat, longitude: locData.lon },
+                    { headers: { 'Content-Type': 'application/json' } }
+                ).then((response) => {
+                  updateHistoricAvg(response.data.temp_today);
+                  updateZScore(response.data.z_score);
+                })
+                
+            }
+        
+    }, []);
+
+
+  const [showButtons, setShowButtons] = useState(true);
+
+  // Function to handle button click
+  const handleButtonClick = () => {
+    setShowButtons(false);
+  };
+
+  const [question, updateQuestion] = useState("");
+  const [type, updateType] = useState("Click me");
+
+  async function questionGetter(){
+    let response = await axios.get(url+"/crowdsource_question");
+    
+    if(response){
+      updateQuestion(response.data.question);
+      updateType(response.data.type);
+    }
+    
+  }
   
   return (
     <DefaultLayout>
@@ -38,7 +115,6 @@ export default function IndexPage() {
           
       <div className={subtitle({ class: "mt-4" })}>
             The most accurate weather you could ask for.
-          
       </div>
           
           <span className={title()}><span className="no-wrap">Saturday,  Nov 9</span> </span>
@@ -49,12 +125,17 @@ export default function IndexPage() {
           <br />
           <br />
           
-          <span className={title({ color: "violet" })}>Feels Like:&nbsp;</span>
+          <span className={title({ color: "violet"})}>Feels Like:&nbsp;</span>
           <br />
           <br />
           {historicAvg !== "loading" ? (<span className={title()}>
               
-             {historicAvg}°C
+              {/* {typeof historicAvg === "string" ? (
+                <p>{historicAvg}°F</p> ) : (
+                  
+                  <p>loading...</p>)} */}
+              
+              {historicAvg}°C
           </span>) : (<Spinner color="secondary"/>)}
           
           <br />
@@ -75,50 +156,39 @@ export default function IndexPage() {
           )}
 
           
+          <br />
+          <br />
       </div>
         
-        {/* <div className="inline-block max-w-lg text-center justify-center">
-          <span className={title({color: "cyan"})}>Make&nbsp;</span>
-          <span className={title({ color: "violet" })}>beautiful&nbsp;</span>
-          <br />
-          <span className={title()}>
-            websites regardless of your design experience.
-          </span>
-          <div className={subtitle({ class: "mt-4" })}>
-          The most accurate weather you could ask for.
-          </div>
-        </div> */}
-
-        <div className="flex gap-3">
-          <Link
-            isExternal
-            className={buttonStyles({
-              color: "primary",
-              radius: "full",
-              variant: "shadow",
-            })}
-            href={siteConfig.links.docs}
-          >
-            Documentation
-          </Link>
-          <Link
-            isExternal
-            className={buttonStyles({ variant: "bordered", radius: "full" })}
-            href={siteConfig.links.github}
-          >
-            <GithubIcon size={20} />
-            GitHub
-          </Link>
+       <div className={subtitle({ class: "flex flex-col items-center justify-center gap-2 py-8 md:py-10" })}>
+            Despite what we're showing you, how do you actually feel the weather is like?
         </div>
+      
+      <div>
+          
+          <>
+          
+          <Button radius="full" className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg m-2" onClick={handleButtonClick}>
+            Colder
+          </Button>          
 
-        <div className="mt-8">
-          <Snippet hideCopyButton hideSymbol variant="bordered">
-            <span>
-              Get started by editing{" "}
-              <Code color="primary">pages/index.tsx</Code>
-            </span>
-          </Snippet>
-        </div>
+          <Button radius="full" className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg m-2" onClick={handleButtonClick}>
+            About the Same
+          </Button>          
+
+          <Button radius="full" className="bg-gradient-to-tr from-[#FF1CF7] to-[#b249f8] text-white shadow-lg m-2" onClick={handleButtonClick}>
+            Hotter
+          </Button>
+
+          </>
+            
+      </div>
+
+      <Button onClick={questionGetter} className="hidden onclick">
+        {type}
+      </Button>
+
+        
       </section>
     </DefaultLayout>
   );
