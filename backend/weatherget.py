@@ -4,7 +4,7 @@ import httpx
 import plotly.express as px
 import polars as pl
 from environs import Env
-from openai import AsyncOpenAI
+from openai import OpenAI
 from scipy.stats import kstest
 
 env = Env()
@@ -18,6 +18,7 @@ def get_probabilistic_weather(longitude: float, latitude: float) -> dict:
     resp = httpx.get(
         f"https://archive-api.open-meteo.com/v1/archive?latitude={latitude}&longitude={longitude}&start_date=1940-01-01&end_date={end}&timezone=UTC&daily=temperature_2m_max"
     )
+    print(resp.url)
     try:
 
         df = pl.from_dict(resp.json()["daily"])
@@ -67,25 +68,23 @@ def get_probabilistic_weather(longitude: float, latitude: float) -> dict:
         }
 
 
-async def test_create_chat_completion():
-    client = AsyncOpenAI(
+def llm():
+    client = OpenAI(
         api_key=env("OPENAI_KEY"),
         base_url="https://fresedgpt.space/v1",
     )
 
-    stream = await client.chat.completions.create(
+    stream = client.chat.completions.create(
         messages=[
             {
                 "role": "user",
-                "content": "give me 6 emojis to fully describe this day: Temperature: 72°F, Rain Probability: 30%. only give me the 6 emojis and output the text in json with 1 key called 'message'",
+                "content": "give me 6 emojis to fully describe this day: Temperature: 72°F, Rain Probability: 100%. only give me the 6 emojis and output the text in json with a key called 'emojis'. output emojis as 1 string only. Then give me a 1 sentence poetic description of the weather info provided and output in json with a key called 'poetry'. they should all be in 1 json.",
             }
         ],
         model="gpt-4o-mini",
-        stream=True,
     )
 
-    async for chunk in stream:
-        print(chunk.choices[0].delta.content or "", end="")
+    return stream.choices[0].message.content
 
 
 # Describe the weather given: Temperature: 72°F, Rain Probability: 30% using poetry in 1 sentence. output the text in json with 1 key called 'message'. include the temperature and rain probability

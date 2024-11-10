@@ -1,9 +1,14 @@
 from openai import AsyncOpenAI
+from environs import Env
+
+env = Env()
+env.read_env()
 
 client = AsyncOpenAI(
-    api_key="fresed-dI7xaGFzDKkBLx9kKzmd0YJ4JZZ9X8",
+    api_key=env("OPENAI_KEY"),
     base_url="https://fresedgpt.space/v1",
 )
+
 
 # Describe the weather given: Temperature: 72°F, Rain Probability: 30% using poetry in 1 sentence. output the text in json with 1 key called 'message'. include the temperature and rain probability
 async def test_create_chat_completion():
