@@ -26,6 +26,9 @@ We'll want to use a matrix factorization recommendation algorithm to sort for th
 ### Future Radar
 No service provides an intuitive way to see some of the happenings in the stratosphere as intuitively as we do. We're focused on making the best visuals in the industry, and we'd love to deliver that in a comprehensible way to all of our users. That's why we'll show you a radar of the rest of the day so you can be assured you're on the lookout for any weather events that might come your way.
 
+### AI
+Currently wer're using GPT-4o mini for our LLM. Given a set of parameters like likelihood of precipitation, temperature, and a number of other factors, the LLM gives us a string of emojis that summarizes what our day would look like. Then we also have a quick sentence of anything you should look out for, or if there's something you need to remember to take before leaving the house.
+
 ## Roadmap
 * mobile app
 * better algorithm
