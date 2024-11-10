@@ -12,12 +12,17 @@ import axios from "axios";
 import { url } from "@/config/url";
 import { Spinner } from "@nextui-org/spinner";
 import {Button} from "@nextui-org/button";
+import moment from "moment"
 
 export default function IndexPage() {
   
   const [historicAvg, updateHistoricAvg] = useState("loading");
   const [z_score, updateZScore] = useState("loading");
-  
+  const [emojis, updateEmojis] = useState("loading");
+  const [poetry, updatePoetry] = useState("loading");
+  const day = moment().format('LL');
+  const time = moment().format('LT');
+
   // useEffect(() => {
     
   //   axios.get("http://ip-api.com/json/").then((response) => {
@@ -81,6 +86,8 @@ export default function IndexPage() {
                 ).then((response) => {
                   updateHistoricAvg(response.data.temp_today);
                   updateZScore(response.data.z_score);
+        updateEmojis(response.data.emojis);
+        updatePoetry(response.data.poetry);
                 })
                 
             }
@@ -117,11 +124,12 @@ export default function IndexPage() {
             The most accurate weather you could ask for.
       </div>
           
-          <span className={title()}><span className="no-wrap">Saturday,  Nov 9</span> </span>
+          <span className={title()}><span className="no-wrap">{day}</span> </span>
           <br />
           <br />
           
-          <span className={title()}>11:45 AM</span>
+          <span style={{ color: 'gray' }}>{time}</span>
+          
           <br />
           <br />
           
@@ -141,7 +149,12 @@ export default function IndexPage() {
           <br />
           <br />
           
-          <span className={title()}>Clear</span>
+          <span className={title()}>{emojis}</span>
+
+          <br />
+          <br />
+
+          <span>{poetry}</span>
 
           <br />
           <br />
