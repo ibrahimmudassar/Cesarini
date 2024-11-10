@@ -78,7 +78,7 @@ def llm():
         messages=[
             {
                 "role": "user",
-                "content": "give me 6 emojis to fully describe this day: Temperature: 72°F, Rain Probability: 100%. only give me the 6 emojis and output the text in json with a key called 'emojis'. output emojis as 1 string only. Then give me a 1 sentence poetic description of the weather info provided and output in json with a key called 'poetry'. they should all be in 1 json.",
+                "content": "give me 6 emojis to fully describe this day: Temperature: 72°F, Rain Probability: 100%. only give me the 6 emojis and output the text in json with a key called 'emojis'. output emojis as 1 string only. Then give me a 1 sentence description of what to wear that day based on the weather and output in json with a key called 'advice'. they should all be in 1 json.",
             }
         ],
         model="gpt-4o-mini",

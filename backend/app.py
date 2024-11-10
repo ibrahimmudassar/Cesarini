@@ -60,13 +60,13 @@ def get_score():
 @app.route("/crowdsource_question", methods=["GET"])
 def crowdsource_question():
     questions = [
-        {"type": "rain", "question": "Is it raining right now?"},
+        # {"type": "rain", "question": "Is it raining right now?"},
         {
             "type": "snow",
             "question": "How many inches of snow on the ground right now?",
         },
-        {"type": "wind", "question": "Is it less/same/more windy than reported?"},
-        {"type": "temperature", "question": "Is it colder/same/hotter than reported?"},
+        # {"type": "wind", "question": "Is it less/same/more windy than reported?"},
+        # {"type": "temp", "question": "Is it colder/same/hotter than reported?"},
     ]
 
     return choice(questions)
