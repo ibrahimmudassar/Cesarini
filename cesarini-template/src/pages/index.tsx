@@ -11,12 +11,17 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { url } from "@/config/url";
 import { Spinner } from "@nextui-org/spinner";
+import moment from "moment"
 
 export default function IndexPage() {
   
   const [historicAvg, updateHistoricAvg] = useState("loading");
   const [z_score, updateZScore] = useState("loading");
-  
+  const [emojis, updateEmojis] = useState("loading");
+  const [poetry, updatePoetry] = useState("loading");
+  const day = moment().format('LL');
+  const time = moment().format('LT');
+
   useEffect(() => {
     
     axios.get("http://ip-api.com/json/").then((response) => {
@@ -26,6 +31,8 @@ export default function IndexPage() {
         console.log("Backend Response:", response.data);
         updateHistoricAvg(response.data.temp_today);
         updateZScore(response.data.z_score);
+        updateEmojis(response.data.emojis);
+        updatePoetry(response.data.poetry);
       })
     })
     
@@ -41,11 +48,12 @@ export default function IndexPage() {
           
       </div>
           
-          <span className={title()}><span className="no-wrap">Saturday,  Nov 9</span> </span>
+          <span className={title()}><span className="no-wrap">{day}</span> </span>
           <br />
           <br />
           
-          <span className={title()}>11:45 AM</span>
+          <span style={{ color: 'gray' }}>{time}</span>
+          
           <br />
           <br />
           
@@ -60,7 +68,12 @@ export default function IndexPage() {
           <br />
           <br />
           
-          <span className={title()}>Clear</span>
+          <span className={title()}>{emojis}</span>
+
+          <br />
+          <br />
+
+          <span>{poetry}</span>
 
           <br />
           <br />
@@ -76,18 +89,6 @@ export default function IndexPage() {
 
           
       </div>
-        
-        {/* <div className="inline-block max-w-lg text-center justify-center">
-          <span className={title({color: "cyan"})}>Make&nbsp;</span>
-          <span className={title({ color: "violet" })}>beautiful&nbsp;</span>
-          <br />
-          <span className={title()}>
-            websites regardless of your design experience.
-          </span>
-          <div className={subtitle({ class: "mt-4" })}>
-          The most accurate weather you could ask for.
-          </div>
-        </div> */}
 
         <div className="flex gap-3">
           <Link
