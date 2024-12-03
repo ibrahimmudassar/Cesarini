@@ -1,11 +1,9 @@
 from datetime import datetime, timedelta
 
 import httpx
-import plotly.express as px
 import polars as pl
 from environs import Env
 from openai import OpenAI
-from scipy.stats import kstest
 
 env = Env()
 env.read_env()
